@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class Product {
+public class ProductController {
     @RequestMapping(value = "/allproducts", method = RequestMethod.GET)
     @ApiOperation(value = "Get All Products",
             notes = "Get the List of all Products Available",

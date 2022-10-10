@@ -25,7 +25,7 @@ public class BookApplication {
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .paths(PathSelectors.ant("/api/*"))
+                .paths(PathSelectors.ant("/api/**"))
                 .apis(RequestHandlerSelectors.basePackage("com.book"))
                 .build()
                 .apiInfo(apiDetails());

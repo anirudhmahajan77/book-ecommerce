@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.book</groupId>
     <artifactId>store</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1-RELEASE</version>
     <name>Book</name>
     <description>Book</description>
     <properties>
@@ -27,7 +27,6 @@
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>1.6.11</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

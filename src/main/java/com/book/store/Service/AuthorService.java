@@ -23,6 +23,7 @@ public class AuthorService {
                 .bio(addAuthor.getBio())
                 .birth(addAuthor.getBirth())
                 .death(addAuthor.getDeath())
+                .imageId(addAuthor.getImageId())
                 .build();
         authorRepository.save(author);
         return author.getId();

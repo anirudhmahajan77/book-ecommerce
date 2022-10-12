@@ -8,12 +8,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api")
 @Tag(name = "Book Controller", description = "This is a controller for Books and it's CRUD operations")
 public class BookController {
@@ -21,11 +28,34 @@ public class BookController {
     @Autowired
     BookService bookService;
 
+
     @PostMapping(value = "/addbook")
     @Operation(summary = "Add New Book", description = "Add new book to store and make it available")
-    public ResponseEntity addBook(@RequestBody AddBook addBook) {
+    public ResponseEntity addBook(@RequestBody AddBook addBook){
         Long result = bookService.addBook(addBook);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+
+    @PostMapping(value = "/image")
+    public ResponseEntity uploadImage(@RequestParam("file") MultipartFile image) throws IOException {
+        String imageId = "";
+        try {
+            imageId = bookService.uploadImage(image);
+        } catch (Exception e) {
+            return new ResponseEntity("Not Working!:", HttpStatus.NOT_IMPLEMENTED);
+        }
+        return new ResponseEntity(imageId, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/image/{id}")
+    public void loadImage(
+            @PathVariable("id") String id,
+            HttpServletResponse response
+    ) throws IOException {
+        InputStream resource = bookService.getImage(id);
+        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        StreamUtils.copy(resource, response.getOutputStream());
     }
 
     @GetMapping(value = "findbook/{id}")

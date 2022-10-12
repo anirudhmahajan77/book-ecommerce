@@ -15,4 +15,5 @@ public class AddAuthor {
     private Date birth;
     private Date death;
     private String bio;
+    private String imageId;
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api")
 @Tag(name = "Author Controller", description = "This is a controller for Authors of Books and their CRUD operations")
 public class AuthorController {

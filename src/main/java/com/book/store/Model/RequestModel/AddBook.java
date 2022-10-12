@@ -20,4 +20,5 @@ public class AddBook {
     private Date published;
     Genre genre;
     Long authorId;
+    private String imageId;
 }

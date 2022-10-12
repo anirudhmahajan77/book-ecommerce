@@ -34,6 +34,7 @@ public class Author {
     private Date birth;
     private Date death;
     private String bio;
+    private String imageId;
 
     @OneToMany(
             cascade = CascadeType.ALL

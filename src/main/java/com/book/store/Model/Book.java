@@ -36,6 +36,7 @@ public class Book {
     boolean favorite;
     private Date published;
     private Long authorId;
+    private String imageId;
 
     @Enumerated(EnumType.STRING)
     Genre genre;

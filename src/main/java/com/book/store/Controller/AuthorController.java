@@ -24,7 +24,7 @@ public class AuthorController {
     @Autowired
     AuthorService authorService;
 
-    @PostMapping(value = "/addauthor")
+    @PostMapping(value = "/add")
     @RolesAllowed("ADMIN")
     @Operation(summary = "Add New Author",
             description = "Add new author to store and make it available")

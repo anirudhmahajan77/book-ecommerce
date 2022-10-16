@@ -2,7 +2,9 @@ package com.book.store.Service;
 
 import com.book.store.Model.Address;
 import com.book.store.Model.ApplicationUser;
+import com.book.store.Model.Book;
 import com.book.store.Model.RequestModel.AddAddress;
+import com.book.store.Model.RequestModel.AddWishlist;
 import com.book.store.Model.RequestModel.NewUser;
 import com.book.store.Model.Role;
 import com.book.store.Repository.AddressRepository;
@@ -25,6 +27,9 @@ public class CustomUserDetailService implements UserDetailsService {
     UserRepository userRepository;
 
     @Autowired
+    BookService bookService;
+
+    @Autowired
     RoleRepository roleRepository;
 
     @Autowired
@@ -40,7 +45,9 @@ public class CustomUserDetailService implements UserDetailsService {
 
         ApplicationUser user = new ApplicationUser(dummy.getUsername(),
                 passwordEncoder.encode(dummy.getPassword()),
-                roles);
+                roles,
+                dummy.getPhone(),
+                dummy.getImageId());
         userRepository.save(user);
     }
 
@@ -92,5 +99,16 @@ public class CustomUserDetailService implements UserDetailsService {
 
     public Address getAddress(Long id) {
         return addressRepository.findById(id).get();
+    }
+
+    public void deleteAddress(Long id) {
+        addressRepository.deleteById(id);
+    }
+
+    public void addBookToWishlist(AddWishlist addWishlist){
+        ApplicationUser user = userRepository.findUserByUsername(addWishlist.getUsername());
+        Book book = bookService.getBookById(addWishlist.getBookId());
+        user.setWishlist(book);
+        userRepository.save(user);
     }
 }

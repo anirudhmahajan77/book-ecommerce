@@ -4,15 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class NewUser {
+@AllArgsConstructor
+public class AddWishlist {
+    Long bookId;
     String username;
-    String password;
-    Set<Integer> authorities;
-    String phone;
-    String imageId;
 }

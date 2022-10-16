@@ -4,6 +4,8 @@ import com.book.store.Security.ApplicationUserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,8 @@ public class ApplicationUser implements UserDetails {
     @Column(name = "user_id")
     String username;
     String password;
+    String phone;
+    String imageId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -38,15 +42,36 @@ public class ApplicationUser implements UserDetails {
     )
     private List<Address> addresses;
 
+    @OneToMany()
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @JoinTable(
+            name = "users_wishlist",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private List<Book> wishlist;
+
+    @OneToOne
+    @JoinTable(
+            name = "users_cart",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "cart_id")
+    )
+    Cart cart;
+
     boolean isAccountNonExpired;
     boolean isAccountNonLocked;
     boolean isCredentialsNonExpired;
     boolean isEnabled;
 
     public ApplicationUser(String username, String password,
-                           Set<Role> grantedAuthorities) {
+                           Set<Role> grantedAuthorities,
+                           String phone,
+                           String imageId) {
         this.username = username;
         this.password = password;
+        this.phone = phone;
+        this.imageId = imageId;
         this.roles = grantedAuthorities;
         this.isAccountNonExpired = true;
         this.isAccountNonLocked = true;
@@ -58,6 +83,9 @@ public class ApplicationUser implements UserDetails {
         this.addresses.add(address);
     }
 
+    public void setWishlist(Book book){
+        this.wishlist.add(book);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

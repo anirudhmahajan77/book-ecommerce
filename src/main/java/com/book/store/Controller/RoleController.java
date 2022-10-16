@@ -3,6 +3,7 @@ package com.book.store.Controller;
 import com.book.store.Model.RequestModel.NewRole;
 import com.book.store.Model.Role;
 import com.book.store.Service.RoleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/role")
+@Tag(name = "Role Controller", description = "This is a controller for User Roles and it's CRUD operations")
 public class RoleController {
 
     @Autowired
@@ -31,7 +33,7 @@ public class RoleController {
     }
 
     @PostMapping("/add")
-    @RolesAllowed("ADMIN")
+    //@RolesAllowed("ADMIN")
     public ResponseEntity addNewRole(@RequestBody NewRole role){
         roleService.addRole(role);
         return new ResponseEntity("Done", HttpStatus.OK);

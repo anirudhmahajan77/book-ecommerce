@@ -4,13 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewUser {
+public class AddAddress {
     String username;
-    String password;
-    Set<Integer> authorities;
+    String title;
+    String number;
+    String houseNumber;
+    String locality;
+    String state;
+    Integer pinCode;
+    String country;
 }

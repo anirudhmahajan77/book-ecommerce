@@ -1,20 +1,19 @@
 package com.book.store.Service;
 
+import com.book.store.Model.Address;
 import com.book.store.Model.ApplicationUser;
+import com.book.store.Model.RequestModel.AddAddress;
 import com.book.store.Model.RequestModel.NewUser;
 import com.book.store.Model.Role;
+import com.book.store.Repository.AddressRepository;
 import com.book.store.Repository.RoleRepository;
 import com.book.store.Repository.UserRepository;
-import com.book.store.Security.ApplicationUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +30,10 @@ public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public void registerUser(NewUser dummy){
+    @Autowired
+    AddressRepository addressRepository;
+
+    public void registerUser(NewUser dummy) {
         Set<Integer> list = dummy.getAuthorities();
         Set<Role> roles = new HashSet<>();
         roles.addAll(roleRepository.findAllById(list));
@@ -41,6 +43,7 @@ public class CustomUserDetailService implements UserDetailsService {
                 roles);
         userRepository.save(user);
     }
+
     @Override
     public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
         ApplicationUser user = userRepository.findUserByUsername(username);
@@ -49,5 +52,45 @@ public class CustomUserDetailService implements UserDetailsService {
 
     public List<ApplicationUser> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public void addUserAddress(AddAddress newAddress) {
+
+        ApplicationUser user = loadUserByUsername(newAddress.getUsername());
+        Address address = Address.builder()
+                .houseNumber(newAddress.getHouseNumber())
+                .country(newAddress.getCountry())
+                .title(newAddress.getTitle())
+                .state(newAddress.getState())
+                .locality(newAddress.getLocality())
+                .number(newAddress.getNumber())
+                .pinCode(newAddress.getPinCode())
+                .build();
+
+        addressRepository.save(address);
+        user.setAddresses(address);
+        userRepository.save(user);
+    }
+
+    public List<Address> getAllAddress() {
+        return addressRepository.findAll();
+    }
+
+    public void updateUserAddress(Long id, AddAddress newAddress) {
+        Address address = Address.builder()
+                .id(id)
+                .houseNumber(newAddress.getHouseNumber())
+                .country(newAddress.getCountry())
+                .title(newAddress.getTitle())
+                .state(newAddress.getState())
+                .locality(newAddress.getLocality())
+                .number(newAddress.getNumber())
+                .pinCode(newAddress.getPinCode())
+                .build();
+        addressRepository.save(address);
+    }
+
+    public Address getAddress(Long id) {
+        return addressRepository.findById(id).get();
     }
 }

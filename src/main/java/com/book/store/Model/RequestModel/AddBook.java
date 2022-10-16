@@ -21,4 +21,5 @@ public class AddBook {
     Genre genre;
     Long authorId;
     private String imageId;
+    private float discount;
 }

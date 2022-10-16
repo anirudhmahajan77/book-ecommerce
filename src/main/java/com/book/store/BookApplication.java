@@ -21,7 +21,7 @@ public class BookApplication {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components())
-                .info(new Info().title("Books & Co. Backend")
+                .info(new Info().title("Books & Co.")
                         .contact(new Contact()
                                 .name("Developer")
                                 .email("anirudhmahajan18@gmail.com"))
@@ -31,4 +31,5 @@ public class BookApplication {
                                 "Which supports features like Stock Management," +
                                 " Author Managament and User and Admin acess also "));
     }
+
 }

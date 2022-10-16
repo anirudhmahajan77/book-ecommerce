@@ -37,6 +37,7 @@ public class Book {
     private Date published;
     private Long authorId;
     private String imageId;
+    private float discount;
 
     @Enumerated(EnumType.STRING)
     Genre genre;

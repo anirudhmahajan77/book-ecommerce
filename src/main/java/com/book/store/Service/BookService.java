@@ -49,6 +49,7 @@ public class BookService {
                 .published(addBook.getPublished())
                 .authorId(addBook.getAuthorId())
                 .imageId(addBook.getImageId())
+                .discount(addBook.getDiscount())
                 .build();
         bookRepository.save(book);
         List<Book> books = author.getBooks();

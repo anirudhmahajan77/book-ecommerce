@@ -15,7 +15,7 @@ public class RoleService {
     @Autowired
     RoleRepository roleRepository;
 
-    public Role getRoleById(Integer id) {
+    public Role getRoleById(Long id) {
         Optional<Role> result = roleRepository.findById(id);
         if(result.isPresent()){
             return result.get();
@@ -34,7 +34,7 @@ public class RoleService {
         roleRepository.save(neRole);
     }
 
-    public void deleteRoleById(Integer id) {
+    public void deleteRoleById(Long id) {
         roleRepository.deleteById(id);
     }
 

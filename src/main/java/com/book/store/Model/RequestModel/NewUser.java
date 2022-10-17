@@ -12,7 +12,7 @@ import java.util.Set;
 public class NewUser {
     String username;
     String password;
-    Set<Integer> authorities;
+    Set<Long> authorities;
     String phone;
     String imageId;
 }

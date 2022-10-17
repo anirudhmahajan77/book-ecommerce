@@ -1,6 +1,5 @@
 package com.book.store.Model;
 
-import com.book.store.Security.ApplicationUserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +19,19 @@ import java.util.*;
 @Table
 public class ApplicationUser implements UserDetails {
     @Id
+    @SequenceGenerator(
+            name = "user_sequence",
+            sequenceName = "user_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "user_sequence"
+    )
     @Column(name = "user_id")
+    private Long id;
+
+    @Column(unique = true)
     String username;
     String password;
     String phone;
@@ -43,7 +54,7 @@ public class ApplicationUser implements UserDetails {
     private List<Address> addresses;
 
     @OneToMany()
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(
             name = "users_wishlist",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -51,13 +62,21 @@ public class ApplicationUser implements UserDetails {
     )
     private List<Book> wishlist;
 
-    @OneToOne
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "users_cart",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "cart_id")
     )
-    Cart cart;
+    private List<CartProduct> cartProduct;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_orderhistorylist",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "orderhistory_id")
+    )
+    private List<OrderHistory> orderHistory;
 
     boolean isAccountNonExpired;
     boolean isAccountNonLocked;
@@ -72,6 +91,9 @@ public class ApplicationUser implements UserDetails {
         this.password = password;
         this.phone = phone;
         this.imageId = imageId;
+        this.cartProduct = new ArrayList<>();
+        this.wishlist = new ArrayList<>();
+        this.addresses = new ArrayList<>();
         this.roles = grantedAuthorities;
         this.isAccountNonExpired = true;
         this.isAccountNonLocked = true;
@@ -85,6 +107,14 @@ public class ApplicationUser implements UserDetails {
 
     public void setWishlist(Book book){
         this.wishlist.add(book);
+    }
+
+    public void setCartProduct(CartProduct product){
+        this.cartProduct.add(product);
+    }
+
+    public void setOrderHistory(OrderHistory history){
+        this.getOrderHistory().add(history);
     }
 
     @Override

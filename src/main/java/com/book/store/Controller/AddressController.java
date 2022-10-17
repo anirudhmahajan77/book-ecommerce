@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -25,8 +26,10 @@ public class AddressController {
     @PostMapping("/add")
     @Operation(summary = "Add Address",
             description = "Add New Address to an existing user profile in the database")
-    public ResponseEntity addUserAddress(@RequestBody AddAddress newAddress) {
-        customUserDetailService.addUserAddress(newAddress);
+    public ResponseEntity addUserAddress(@RequestBody AddAddress newAddress, HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        System.out.println("===Token: "+token);
+        customUserDetailService.addUserAddress(newAddress, token);
         return new ResponseEntity("Done", HttpStatus.OK);
     }
 
@@ -54,8 +57,9 @@ public class AddressController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete Address by ID", description = "Delete the Address with the given ID")
-    public ResponseEntity deleteAddressById(@PathVariable("id") Long id) {
-        customUserDetailService.deleteAddress(id);
+    public ResponseEntity deleteAddressById(@PathVariable("id") Long id, HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        customUserDetailService.deleteAddress(id, token);
         return new ResponseEntity("Address Deleted", HttpStatus.OK);
     }
 

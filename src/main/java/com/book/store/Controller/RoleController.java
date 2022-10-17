@@ -21,7 +21,7 @@ public class RoleController {
     RoleService roleService;
 
     @GetMapping("/{id}")
-    public ResponseEntity getRoleById(@PathVariable("id") Integer id){
+    public ResponseEntity getRoleById(@PathVariable("id") Long id){
         Role result = roleService.getRoleById(id);
         return new ResponseEntity(result, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class RoleController {
 
     @DeleteMapping("/{id}")
     @RolesAllowed("ADMIN")
-    public ResponseEntity deleteRole(@PathVariable("id") Integer id){
+    public ResponseEntity deleteRole(@PathVariable("id") Long id){
         roleService.deleteRoleById(id);
         return new ResponseEntity("Role Deleted!", HttpStatus.OK);
     }

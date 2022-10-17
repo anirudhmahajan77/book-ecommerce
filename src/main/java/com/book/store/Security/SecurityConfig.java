@@ -12,16 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.jws.soap.SOAPBinding;
-
-import static com.book.store.Security.ApplicationUserRole.ADMIN;
 
 @EnableWebSecurity
 @Configuration
@@ -37,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationFilter jwtFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
         //return NoOpPasswordEncoder.getInstance();
     }
@@ -73,8 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/user/all",
                         "/api/role/**")
                 .permitAll()
-                .antMatchers("/api/general/**").hasAnyRole("ADMIN","CUSTOMER")
-                .antMatchers("/api/address/**").hasAnyRole("ADMIN","CUSTOMER")
+                .antMatchers("/api/general/**").hasAnyRole("ADMIN", "CUSTOMER")
+                .antMatchers("/api/address/**").hasAnyRole("ADMIN", "CUSTOMER")
                 .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/user/**").permitAll()

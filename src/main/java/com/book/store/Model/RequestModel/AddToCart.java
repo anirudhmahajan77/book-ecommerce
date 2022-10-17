@@ -7,12 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddAddress {
-    String title;
-    String number;
-    String houseNumber;
-    String locality;
-    String state;
-    Integer pinCode;
-    String country;
+public class AddToCart {
+    Long bookId;
+    int quantity;
 }

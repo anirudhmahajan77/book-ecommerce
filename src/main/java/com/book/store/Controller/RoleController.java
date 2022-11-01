@@ -13,6 +13,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/role")
 @Tag(name = "Role Controller", description = "This is a controller for User Roles and it's CRUD operations")
 public class RoleController {

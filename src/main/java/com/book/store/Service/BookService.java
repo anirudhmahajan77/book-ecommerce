@@ -111,4 +111,10 @@ public class BookService {
         InputStream image = new ByteArrayInputStream(fileDb.getData());
         return image;
     }
+
+    public List<Book> searchBookByName(String name) {
+        return bookRepository.findFirst3BookByNameContainingIgnoreCase(name);
+    }
+
+
 }

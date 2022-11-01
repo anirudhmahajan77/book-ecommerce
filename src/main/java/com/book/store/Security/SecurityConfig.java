@@ -29,10 +29,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
-        //return NoOpPasswordEncoder.getInstance();
     }
 
     @Bean
@@ -47,10 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .cors().disable()
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        http.csrf().disable();
+        http.cors();
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/*",
                         "/v2/api-docs",
@@ -64,9 +63,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/user/login",
                         "/api/user/register",
                         "/api/user/all",
-                        "/api/role/**")
+                        "/api/role/**",
+                        "/api/general/**")
                 .permitAll()
-                .antMatchers("/api/general/**").hasAnyRole("ADMIN", "CUSTOMER")
+                //.antMatchers("/api/general/**").hasAnyRole("ADMIN", "CUSTOMER")
                 .antMatchers("/api/address/**").hasAnyRole("ADMIN", "CUSTOMER")
                 .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()

@@ -1,20 +1,18 @@
-package com.book.store.Model.RequestModel;
+package com.book.store.Model.ResponseModel;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewUser {
+@Builder
+@Data
+public class HeaderMenuUserData {
     String username;
-    String password;
-    Set<Long> authorities;
-    String phone;
     String imageId;
+    Long userId;
     String firstName;
     String lastName;
 }

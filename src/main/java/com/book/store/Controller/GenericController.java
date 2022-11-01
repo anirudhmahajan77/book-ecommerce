@@ -1,6 +1,8 @@
 package com.book.store.Controller;
 
+import com.book.store.Model.FileDb;
 import com.book.store.Service.BookService;
+import com.book.store.Service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -24,7 +27,7 @@ import java.io.InputStream;
 public class GenericController {
 
     @Autowired
-    BookService bookService;
+    ImageService imageService;
 
     @PostMapping(value = "/image")
     @RolesAllowed({"ADMIN","CUSTOMER"})
@@ -32,7 +35,7 @@ public class GenericController {
     public ResponseEntity uploadImage(@RequestParam("file") MultipartFile image) throws IOException {
         String imageId = "";
         try {
-            imageId = bookService.uploadImage(image);
+            imageId = imageService.uploadImage(image);
         } catch (Exception e) {
             return new ResponseEntity("Not Working!:", HttpStatus.NOT_IMPLEMENTED);
         }
@@ -45,9 +48,16 @@ public class GenericController {
             @PathVariable("id") String id,
             HttpServletResponse response
     ) throws IOException {
-        InputStream resource = bookService.getImage(id);
+        InputStream resource = imageService.getImage(id);
         response.setContentType(MediaType.IMAGE_PNG_VALUE);
         StreamUtils.copy(resource, response.getOutputStream());
+    }
+
+    @GetMapping("/image/all")
+    @Operation(summary = "Get All Image IDs", description = "Get All Image IDs hosted on the database")
+    public ResponseEntity getAllImages(){
+        List<FileDb> result = imageService.getAllImages();
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 
 }

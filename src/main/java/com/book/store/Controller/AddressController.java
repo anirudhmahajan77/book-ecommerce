@@ -4,6 +4,9 @@ import com.book.store.Model.Address;
 import com.book.store.Model.RequestModel.AddAddress;
 import com.book.store.Service.CustomUserDetailService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @Tag(name = "Address Controller",
         description = "This is a controller for Different Addresses and their CRUD operations")
 @RequestMapping("/api/address")
@@ -42,14 +47,20 @@ public class AddressController {
     }
 
     @GetMapping("/all")
+    //@CrossOrigin(allowedHeaders = {"Authorization","Access-Control-Allow-Origin"})
     @Operation(summary = "Get All Address", description = "Get All Address in the System")
-    public ResponseEntity getAllAddress() {
+    public ResponseEntity getAllAddress(HttpServletRequest request, HttpServletResponse response) {
         List<Address> result = customUserDetailService.getAllAddress();
+        String token = request.getHeader("Authorization");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range");
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get Address by ID", description = "Get the Address with the given ID")
+    @Operation(summary = "Get Address by ID",
+            description = "Get the Address with the given ID")
     public ResponseEntity getAddressById(@PathVariable("id") Long id) {
         Address result = customUserDetailService.getAddress(id);
         return new ResponseEntity(result, HttpStatus.OK);

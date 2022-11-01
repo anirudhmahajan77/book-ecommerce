@@ -50,6 +50,14 @@ public class BookController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "search/{name}")
+    @Operation(summary = "Find Book By Name Regex",
+            description = "Find the Book using given String and return the response list")
+    public ResponseEntity findBookByName(@PathVariable("name") String name) {
+        List<Book> result = bookService.searchBookByName(name);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/genre/{genre}")
     @Operation(summary = "Get Books By Genre",
             description = "Get Existing Book using their Genre")

@@ -1,9 +1,8 @@
 package com.book.store.Service;
 
 import com.book.store.Model.*;
-import com.book.store.Model.RequestModel.AddAddress;
-import com.book.store.Model.RequestModel.AddToCart;
-import com.book.store.Model.RequestModel.NewUser;
+import com.book.store.Model.RequestModel.*;
+import com.book.store.Model.ResponseModel.HeaderMenuUserData;
 import com.book.store.Repository.*;
 import com.book.store.Security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -42,28 +43,31 @@ public class CustomUserDetailService implements UserDetailsService {
     @Autowired
     OrderHistoryRepository orderHistoryRepository;
 
-    //@Autowired
-    //OrderRepository orderRepository;
-
     @Autowired
     OrderProductRepository orderProductRepository;
 
-    public void registerUser(NewUser dummy) {
+    @Autowired
+    EmailService emailService;
+
+    public void registerUser(NewUser dummy) throws IOException {
         Set<Long> list = dummy.getAuthorities();
         Set<Role> roles = new HashSet<>();
         roles.addAll(roleRepository.findAllById(list));
 
-        ApplicationUser user = new ApplicationUser(dummy.getUsername(),
-                passwordEncoder.encode(dummy.getPassword()),
+        ApplicationUser user = new ApplicationUser(dummy.getUsername().toLowerCase().trim(),
+                passwordEncoder.encode(dummy.getPassword().trim()),
                 roles,
                 dummy.getPhone(),
-                dummy.getImageId());
+                dummy.getImageId(),
+                dummy.getFirstName().trim(),
+                dummy.getLastName().trim());
         userRepository.save(user);
+        emailService.sendRegistrationEmail(user.getUsername(), user.getFirstName());
     }
 
     @Override
     public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
-        ApplicationUser user = userRepository.findUserByUsername(username);
+        ApplicationUser user = userRepository.findUserByUsername(username.toLowerCase().trim());
         return user;
     }
 
@@ -145,14 +149,51 @@ public class CustomUserDetailService implements UserDetailsService {
     public void moveWishlistToCart(AddToCart cart, String token) {
         String username = jwtUtil.extractUsername(token);
         ApplicationUser user = userRepository.findUserByUsername(username);
-        //Book book = bookService.getBookById(id);
-        CartProduct cartProduct = CartProduct.builder()
-                .bookId(cart.getBookId())
-                .quantity(cart.getQuantity())
-                .build();
-        cartProductRepository.save(cartProduct);
-        user.setCartProduct(cartProduct);
-        this.deleteBookFromWishlist(cart.getBookId(), token);
+        AtomicBoolean flag = new AtomicBoolean(true);
+
+        user.getCartProduct().forEach(elem-> {
+            if(elem.getBookId() == cart.getBookId()){
+                flag.set(false);
+            }
+        });
+
+        if(flag.get()){
+            CartProduct cartProduct = CartProduct.builder()
+                    .bookId(cart.getBookId())
+                    .quantity(cart.getQuantity())
+                    .build();
+            cartProductRepository.save(cartProduct);
+            user.setCartProduct(cartProduct);
+            this.deleteBookFromWishlist(cart.getBookId(), token);
+            userRepository.save(user);
+        }
+    }
+
+    public void addToCart(Long bookId, String token){
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user = userRepository.findUserByUsername(username);
+        AtomicBoolean flag = new AtomicBoolean(true);
+        user.getCartProduct().forEach(elem-> {
+            if(elem.getBookId() == bookId){
+                flag.set(false);
+            }
+        });
+
+        if(flag.get()){
+            CartProduct cartProduct = CartProduct.builder()
+                    .bookId(bookId)
+                    .quantity(1)
+                    .build();
+            cartProductRepository.save(cartProduct);
+            user.setCartProduct(cartProduct);
+            userRepository.save(user);
+        }
+    }
+
+    public void deleteBookFromCart(Long bookId, String token) {
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user = userRepository.findUserByUsername(username);
+        user.getCartProduct().removeIf(elem->(elem.getBookId()==bookId));
         userRepository.save(user);
     }
 
@@ -161,7 +202,6 @@ public class CustomUserDetailService implements UserDetailsService {
         ApplicationUser user = userRepository.findUserByUsername(username);
 
         List<CartProduct> products = user.getCartProduct();
-        //products.forEach(elem -> System.out.println(elem.toString()));
         AtomicReference<Float> bill = new AtomicReference<>((float) 0);
         AtomicReference<Float> price = new AtomicReference<>((float) 0);
 
@@ -209,6 +249,56 @@ public class CustomUserDetailService implements UserDetailsService {
         user.getCartProduct().clear();
         userRepository.save(user);
 
+    }
 
+    public List<CartProduct> getUserCart(String token) {
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user = userRepository.findUserByUsername(username);
+        return user.getCartProduct();
+    }
+
+    public Map<Long, List<CartProduct>> getAllUserCarts() {
+        Map<Long, List<CartProduct>> result = new HashMap<>();
+        List<ApplicationUser> users = userRepository.findAll();
+        users.forEach(user -> {
+            result.put(user.getId(), user.getCartProduct());
+        });
+        return result;
+    }
+
+    public void updateOrderState(UpdateOrderState newState, String token) {
+        OrderHistory order = orderHistoryRepository.findById(newState.getId()).get();
+        order.setOrderState(newState.getNewState());
+        orderHistoryRepository.save(order);
+    }
+
+    public HeaderMenuUserData loadUserByToken(String token) {
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user =  this.loadUserByUsername(username);
+        HeaderMenuUserData data = HeaderMenuUserData.builder()
+                .userId(user.getId())
+                .imageId(user.getImageId())
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+        return data;
+    }
+
+    public void updateUserProfile(UserProfileUpdate updatedUser, String token) {
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user =  this.loadUserByUsername(username);
+        user.setFirstName(updatedUser.getFirstName());
+        user.setLastName(updatedUser.getLastName());
+        user.setUsername(updatedUser.getUsername());
+        user.setPhone(updatedUser.getPhone());
+        user.setImageId(updatedUser.getImageId());
+        userRepository.save(user);
+    }
+
+    public void deleteUserByToken(String token) {
+        String username = jwtUtil.extractUsername(token);
+        ApplicationUser user =  this.loadUserByUsername(username);
+        userRepository.delete(user);
     }
 }

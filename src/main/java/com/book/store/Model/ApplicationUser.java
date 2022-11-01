@@ -36,6 +36,8 @@ public class ApplicationUser implements UserDetails {
     String password;
     String phone;
     String imageId;
+    String firstName;
+    String lastName;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -86,11 +88,15 @@ public class ApplicationUser implements UserDetails {
     public ApplicationUser(String username, String password,
                            Set<Role> grantedAuthorities,
                            String phone,
-                           String imageId) {
+                           String imageId,
+                           String firstName,
+                           String lastName) {
         this.username = username;
         this.password = password;
         this.phone = phone;
         this.imageId = imageId;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.cartProduct = new ArrayList<>();
         this.wishlist = new ArrayList<>();
         this.addresses = new ArrayList<>();

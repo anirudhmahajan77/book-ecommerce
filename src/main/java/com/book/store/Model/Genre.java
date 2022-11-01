@@ -2,9 +2,9 @@ package com.book.store.Model;
 
 public enum Genre {
     HORROR,
-    FICTION,
+    DRAMA,
     SELF_HELP,
     SCI_FI,
-    TECH,
+    MYSTERY,
     LITERATURE
 }

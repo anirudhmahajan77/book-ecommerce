@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/wishlist")
 @Tag(name = "Wishlist Controller", description = "This is a controller for WIshlist of Users and their CRUD operations")
 public class WishlistController {
@@ -55,7 +56,7 @@ public class WishlistController {
         return new ResponseEntity<>("Done", HttpStatus.OK);
     }
 
-    @PostMapping("/move/")
+    @PostMapping("/move")
     @RolesAllowed({"ADMIN", "CUSTOMER"})
     @Operation(summary = "Move From Wishlist to Cart",
             description = "Move the book with given ID from the " +
